@@ -1,5 +1,8 @@
 #lang eopl
-;Autores: Nombre1 Codigo1, Nombre2 Codigo2
+#|
+Autores:
+Santiago Serrano Morales 2477006
+|#
 
 #|
   Taller 3 — Cauca con referencias y tipos.
