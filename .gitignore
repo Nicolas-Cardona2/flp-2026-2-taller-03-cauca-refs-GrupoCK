@@ -3,3 +3,4 @@ compiled/
 *.dep
 .DS_Store
 *.bak
+*.1
