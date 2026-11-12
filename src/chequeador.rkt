@@ -50,7 +50,7 @@ Santiago Serrano Morales 2477006
         (+ posicion 1)))
       (else
        (eopl:error 'type-of
-         "El argumento ~s debe ser ~s, se encontro ~s"
+         "El argumento ~a debe ser ~a, se encontro ~a"
          posicion
          (tipo->texto (car esperados))
          (tipo->texto (car reales)))))))
@@ -68,7 +68,7 @@ Santiago Serrano Morales 2477006
         (cdr tipos)))
       (else
        (eopl:error 'type-of
-         "Las ramas del case deben coincidir: ~s vs ~s"
+         "Las ramas del case deben coincidir: ~a vs ~a"
          (tipo->texto tipo-esperado)
          (tipo->texto (car tipos)))))))
 
@@ -96,7 +96,7 @@ Santiago Serrano Morales 2477006
                (cdr cuerpos)
                amb)
               (eopl:error 'type-of
-                "El procedimiento ~s declara ~s y su cuerpo da ~s"
+                "El procedimiento ~a declara ~a y su cuerpo da ~a"
                 (car nombres)
                 (tipo->texto (car tipos-res))
                 (tipo->texto tipo-cuerpo)))))))
@@ -120,24 +120,24 @@ Santiago Serrano Morales 2477006
                   amb
                   (+ posicion 1))
                  (eopl:error 'type-of
-                   "El argumento ~s debe ser ~s, se encontro ~s"
+                   "El argumento ~a debe ser ~a, se encontro ~a"
                    posicion
                    (tipo->texto (car esperados))
                    (tipo->texto tipo-real)))
            )
            (num-tipo ()
              (eopl:error 'type-of
-               "El parametro ~s de applyref debe ser refto(t), se encontro ~s"
+               "El parametro ~a de applyref debe ser refto(t), se encontro ~a"
                posicion
                (tipo->texto (car esperados))))
            (bool-tipo ()
              (eopl:error 'type-of
-               "El parametro ~s de applyref debe ser refto(t), se encontro ~s"
+               "El parametro ~a de applyref debe ser refto(t), se encontro ~a"
                posicion
                (tipo->texto (car esperados))))
            (proc-tipo (argumentos resultado)
              (eopl:error 'type-of
-               "El parametro ~s de applyref debe ser refto(t), se encontro ~s"
+               "El parametro ~a de applyref debe ser refto(t), se encontro ~a"
                posicion
                (tipo->texto (car esperados))))))))))
 
@@ -181,12 +181,12 @@ Santiago Serrano Morales 2477006
                     tipo-condicion
                     (bool-tipo)))
               (eopl:error 'type-of
-                "La condicion del if debe ser bool, se encontro ~s"
+                "La condicion del if debe ser bool, se encontro ~a"
                 (tipo->texto tipo-condicion))
               (if (tipos-iguales? tipo-then tipo-else)
                   tipo-then
                   (eopl:error 'type-of
-                    "Las ramas del if deben coincidir: ~s vs ~s"
+                    "Las ramas del if deben coincidir: ~a vs ~a"
                     (tipo->texto tipo-then)
                     (tipo->texto tipo-else))))))
 
@@ -221,23 +221,23 @@ Santiago Serrano Morales 2477006
                      tipos-args tipos-reales 1)
                     tipo-resultado)
                   (eopl:error 'type-of
-                    "El procedimiento espera ~s argumentos y recibio ~s"
+                    "El procedimiento espera ~a argumentos y recibio ~a"
                     (length tipos-args)
                     (length rands))))
 
             (num-tipo ()
               (eopl:error 'type-of
-                "Se intento aplicar un valor de tipo ~s"
+                "Se intento aplicar un valor de tipo ~a"
                 (tipo->texto tipo-operador)))
 
             (bool-tipo ()
               (eopl:error 'type-of
-                "Se intento aplicar un valor de tipo ~s"
+                "Se intento aplicar un valor de tipo ~a"
                 (tipo->texto tipo-operador)))
 
             (ref-tipo (tipo-interno)
               (eopl:error 'type-of
-                "Se intento aplicar un valor de tipo ~s"
+                "Se intento aplicar un valor de tipo ~a"
                 (tipo->texto tipo-operador))))))
 
       (letrec-exp (tipos-res proc-names idss tipos-args bodies body)
@@ -265,7 +265,7 @@ Santiago Serrano Morales 2477006
         (let ((tipo-exp (type-of exp amb)))
           (if (not (tipos-iguales? tipo-exp (num-tipo)))
               (eopl:error 'type-of
-                "La expresion del case debe ser num, se encontro ~s"
+                "La expresion del case debe ser num, se encontro ~a"
                 (tipo->texto tipo-exp))
               (let ((tipo-primera
                      (type-of rama-primera amb))
@@ -291,15 +291,15 @@ Santiago Serrano Morales 2477006
               tipo-interno)
             (num-tipo ()
               (eopl:error 'type-of
-                "deref espera refto(t), se encontro ~s"
+                "deref espera refto(t), se encontro ~a"
                 (tipo->texto tipo-exp)))
             (bool-tipo ()
               (eopl:error 'type-of
-                "deref espera refto(t), se encontro ~s"
+                "deref espera refto(t), se encontro ~a"
                 (tipo->texto tipo-exp)))
             (proc-tipo (argumentos resultado)
               (eopl:error 'type-of
-                "deref espera refto(t), se encontro ~s"
+                "deref espera refto(t), se encontro ~a"
                 (tipo->texto tipo-exp))))))
 
       (setref-exp (ref exp)
@@ -310,20 +310,20 @@ Santiago Serrano Morales 2477006
               (if (tipos-iguales? tipo-interno tipo-valor)
                   (num-tipo)
                   (eopl:error 'type-of
-                    "La celda guarda ~s y se intento escribir ~s"
+                    "La celda guarda ~a y se intento escribir ~a"
                     (tipo->texto tipo-interno)
                     (tipo->texto tipo-valor))))
             (num-tipo ()
               (eopl:error 'type-of
-                "setref espera refto(t), se encontro ~s"
+                "setref espera refto(t), se encontro ~a"
                 (tipo->texto tipo-ref)))
             (bool-tipo ()
               (eopl:error 'type-of
-                "setref espera refto(t), se encontro ~s"
+                "setref espera refto(t), se encontro ~a"
                 (tipo->texto tipo-ref)))
             (proc-tipo (argumentos resultado)
               (eopl:error 'type-of
-                "setref espera refto(t), se encontro ~s"
+                "setref espera refto(t), se encontro ~a"
                 (tipo->texto tipo-ref))))))
 
       (swap-exp (ref1 ref2)
@@ -337,32 +337,32 @@ Santiago Serrano Morales 2477006
                        tipo-interno1 tipo-interno2)
                       tipo-interno1
                       (eopl:error 'type-of
-                        "Las referencias de swap deben guardar el mismo tipo: ~s vs ~s"
+                        "Las referencias de swap deben guardar el mismo tipo: ~a vs ~a"
                         (tipo->texto tipo-interno1)
                         (tipo->texto tipo-interno2))))
                 (num-tipo ()
                   (eopl:error 'type-of
-                    "swap espera dos referencias, se encontro ~s"
+                    "swap espera dos referencias, se encontro ~a"
                     (tipo->texto tipo-ref2)))
                 (bool-tipo ()
                   (eopl:error 'type-of
-                    "swap espera dos referencias, se encontro ~s"
+                    "swap espera dos referencias, se encontro ~a"
                     (tipo->texto tipo-ref2)))
                 (proc-tipo (argumentos resultado)
                   (eopl:error 'type-of
-                    "swap espera dos referencias, se encontro ~s"
+                    "swap espera dos referencias, se encontro ~a"
                     (tipo->texto tipo-ref2)))))
             (num-tipo ()
               (eopl:error 'type-of
-                "swap espera dos referencias, se encontro ~s"
+                "swap espera dos referencias, se encontro ~a"
                 (tipo->texto tipo-ref1)))
             (bool-tipo ()
               (eopl:error 'type-of
-                "swap espera dos referencias, se encontro ~s"
+                "swap espera dos referencias, se encontro ~a"
                 (tipo->texto tipo-ref1)))
             (proc-tipo (argumentos resultado)
               (eopl:error 'type-of
-                "swap espera dos referencias, se encontro ~s"
+                "swap espera dos referencias, se encontro ~a"
                 (tipo->texto tipo-ref1))))))
 
       (begin-exp (exp exps)
@@ -384,23 +384,23 @@ Santiago Serrano Morales 2477006
                      tipos-args ids amb 1)
                     tipo-resultado)
                   (eopl:error 'type-of
-                    "El procedimiento espera ~s argumentos y recibio ~s"
+                    "El procedimiento espera ~a argumentos y recibio ~a"
                     (length tipos-args)
                     (length ids))))
 
             (num-tipo ()
               (eopl:error 'type-of
-                "Se intento aplicar un valor de tipo ~s"
+                "Se intento aplicar un valor de tipo ~a"
                 (tipo->texto tipo-operador)))
 
             (bool-tipo ()
               (eopl:error 'type-of
-                "Se intento aplicar un valor de tipo ~s"
+                "Se intento aplicar un valor de tipo ~a"
                 (tipo->texto tipo-operador)))
 
             (ref-tipo (tipo-interno)
               (eopl:error 'type-of
-                "Se intento aplicar un valor de tipo ~s"
+                "Se intento aplicar un valor de tipo ~a"
                 (tipo->texto tipo-operador)))))))))
  
 

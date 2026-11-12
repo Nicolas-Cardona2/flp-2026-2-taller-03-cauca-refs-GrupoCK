@@ -128,7 +128,7 @@ Santiago Serrano Morales 2477006
   (lambda (amb id)
     (cases tenv amb
       (tenv-vacio ()
-        (eopl:error 'apply-tenv "Variable no declarada: ~s" id))
+        (eopl:error 'apply-tenv "Variable no declarada: ~a" id))
 
       (tenv-extendido (ids tipos env)
         (let ((pos (posicion-de-tipo id ids)))
@@ -285,7 +285,7 @@ Santiago Serrano Morales 2477006
                   [(tipos-iguales? (car lista) tipo-esperado)
                    (verificar-lista (cdr lista))]
                   [else
-                   (eopl:error 'tipo-de-primitiva "Tipo de argumento incorrecto: se esperaba ~s y se encontro ~s"
+                   (eopl:error 'tipo-de-primitiva "Tipo de argumento incorrecto: se esperaba ~a y se encontro ~a"
                     (tipo->texto tipo-esperado)
                     (tipo->texto (car lista)))]))))
           (verificar-lista tipos)))))
