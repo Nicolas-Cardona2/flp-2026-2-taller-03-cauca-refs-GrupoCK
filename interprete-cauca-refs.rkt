@@ -1,5 +1,5 @@
 #lang eopl
-;Autores: Nombre1 Codigo1, Nombre2 Codigo2
+;Autores: Nicolás Cardona García 2477349, Santiago Serrano Morales 2477006, Laura Sofia Echeverry Gonzalez 2477067, Samuel Esteban Peña Jaramillo 2477399
 
 #|
   Taller 3 — Cauca con referencias y tipos.
