@@ -1,5 +1,11 @@
 #lang eopl
-;Autores: Nombre1 Codigo1, Nombre2 Codigo2
+#|
+;Autores:
+Nicolás Cardona García 2477349,
+Laura Sofía Echeverry González 2477067,
+Santiago Serrano Morales 2477006,
+Samuel Esteban Peña Jaramillo 2477399
+|#
 
 #|
   Pruebas del interpretador con referencias y del chequeador de tipos.
@@ -228,3 +234,219 @@ end") "num"))
 (eopl:printf "~%==========================================~%")
 (eopl:printf "  pruebas fallidas en total: ~s~%" fallidas)
 (eopl:printf "==========================================~%")
+
+#|
+  pruebas adicionales de integración. ✮⋆ ̇
+  se conservan las pruebas originales y se agregan casos
+  de alias, referencias, tipos y programas del informe.
+
+  funciones del archivo original utilizadas por estas pruebas:
+
+  corre : string -> valor
+  propósito: ejecutar un programa mediante interpretar.
+
+  tipo-de : string -> string
+  propósito: obtener el tipo de un programa como texto.
+
+  contiene? : string x string -> boolean
+  propósito: comprobar si un texto contiene el fragmento indicado.
+|#
+
+(define pruebas-adicionales-soku
+  (test-suite
+   "pruebas adicionales: integración e informe"
+
+   (test-case
+    "swap de una referencia consigo misma"
+    (check-equal?
+     (corre
+      "let c = newref(8)
+       in
+         +(swap(c, c), deref(c))
+       end")
+     16))
+
+   (test-case
+    "swap mediante dos alias de la misma celda"
+    (check-equal?
+     (corre
+      "let c = newref(9)
+       in
+         let alias = c
+         in
+           begin
+             swap(c, alias);
+             deref(c)
+           end
+         end
+       end")
+     9))
+
+   (test-case
+    "applyref conserva alias entre parametros"
+    (check-equal?
+     (corre
+      "let c = newref(1)
+       in
+         let f = proc (u : refto(num), v : refto(num))
+                   begin
+                     setref(u, 7);
+                     deref(v)
+                   end
+                 end
+         in
+           applyref f (c, c)
+         end
+       end")
+     7))
+
+   (test-case
+    "apply crea una copia por cada argumento referencia"
+    (check-equal?
+     (corre
+      "let c = newref(1)
+       in
+         let f = proc (u : refto(num), v : refto(num))
+                   begin
+                     setref(u, 7);
+                     deref(v)
+                   end
+                 end
+         in
+           apply f (c, c)
+         end
+       end")
+     1))
+
+   (test-case
+    "applyref detecta aridad incorrecta"
+    (check-exn
+     exn:fail?
+     (lambda ()
+       (corre
+        "let c = newref(1)
+         in
+           let f = proc (u : refto(num)) deref(u) end
+           in
+             applyref f (c, c)
+           end
+         end")))
+    (check-true
+     (contiene?
+      (mensaje-de
+       "let c = newref(1)
+        in
+          let f = proc (u : refto(num)) deref(u) end
+          in
+            applyref f (c, c)
+          end
+        end")
+      "El procedimiento espera 1 argumentos y recibio 2")))
+
+   (test-case
+    "deref y setref rechazan posiciones fuera de rango"
+    (initialize-store!)
+    (check-exn exn:fail? (lambda () (deref (a-ref 0))))
+    (check-exn exn:fail? (lambda () (deref (a-ref -1))))
+    (check-exn exn:fail? (lambda () (setref! (a-ref 0) 10))))
+
+   (test-case
+    "setref modifica solo la celda indicada y no agrega celdas"
+    (initialize-store!)
+    (let* ((a (newref! 10))
+           (b (newref! 20))
+           (c (newref! 30)))
+      (setref! b 99)
+      (check-equal? (deref a) 10)
+      (check-equal? (deref b) 99)
+      (check-equal? (deref c) 30)
+      (check-equal? (newref! 40) (a-ref 3))))
+
+   (test-case
+    "cada programa reinicia las posiciones del almacen"
+    (check-equal? (corre "newref(1)") (a-ref 0))
+    (check-equal? (corre "newref(2)") (a-ref 0)))
+
+   (test-case
+    "swap rechaza referencias con contenidos de distinto tipo"
+    (check-true
+     (contiene?
+      (mensaje-de
+       "let a = newref(1) b = newref(true)
+        in swap(a, b) end")
+      "Las referencias de swap deben guardar el mismo tipo: num vs bool")))
+
+   (test-case
+    "case rechaza ramas de distinto tipo"
+    (check-true
+     (contiene?
+      (mensaje-de
+       "case n of 1 => 10 otherwise => false end")
+      "Las ramas del case deben coincidir: num vs bool")))
+
+   (test-case
+    "el programa original del informe se analiza pero no pasa tipos"
+    (let ((texto
+           "let saldo = newref(100)
+            in
+              let retirar =
+                proc (cuenta : refto(num), monto : num)
+                  if >=(deref(cuenta), monto)
+                  then begin
+                         setref(cuenta, -(deref(cuenta), monto));
+                         deref(cuenta)
+                       end
+                  else deref(cuenta)
+                  end
+                end
+              in
+                begin
+                  applyref retirar (saldo, q);
+                  deref(saldo)
+                end
+              end
+            end"))
+      (check-true (programa? (parser texto)))
+      (check-exn exn:fail? (lambda () (tipo-de texto)))))
+
+   (test-case
+    "la correccion minima del informe conserva el saldo original"
+    (let ((texto
+           "let saldo = newref(100)
+            in
+              let retirar =
+                proc (cuenta : refto(num), monto : num)
+                  if >=(deref(cuenta), monto)
+                  then begin
+                         setref(cuenta, -(deref(cuenta), monto));
+                         deref(cuenta)
+                       end
+                  else deref(cuenta)
+                  end
+                end
+              in
+                begin
+                  apply retirar (saldo, q);
+                  deref(saldo)
+                end
+              end
+            end"))
+      (check-equal? (tipo-de texto) "num")
+      (check-equal? (corre texto) 100)))))
+
+(define fallidas-adicionales-soku
+  (run-tests pruebas-adicionales-soku))
+
+(eopl:printf
+ "~%==========================================~%")
+
+(eopl:printf
+ "  pruebas adicionales fallidas: ~s~%"
+ fallidas-adicionales-soku)
+
+(eopl:printf
+ "  fallidas originales y adicionales: ~s~%"
+ (+ fallidas fallidas-adicionales-soku))
+
+(eopl:printf
+ "==========================================~%")
